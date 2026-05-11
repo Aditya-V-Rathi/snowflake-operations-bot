@@ -51,7 +51,7 @@ A full-stack application that enables authorized team members to perform Snowfla
 3. Run with Docker:
    docker-compose up --build
 
-4. Angular dashboard will be at http://localhost:80
+4. Angular dashboard will be at http://localhost:8000
    C# API will be at http://localhost:5170
 
 5. Configure Slack slash command Request URL:
