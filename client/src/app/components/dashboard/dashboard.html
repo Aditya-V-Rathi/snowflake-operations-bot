@@ -1,0 +1,138 @@
+<div class="dashboard-container">
+  <div class="header">
+    <div>
+      <h1>Snowflake Bot - Audit Dashboard</h1>
+      <p class="subtitle">{{ autoRefresh ? 'Auto-refreshes every 60 seconds' : 'Auto-refresh is off' }}</p>
+    </div>
+    <div class="toggle-container">
+      <span class="toggle-label">Auto Refresh</span>
+      <label class="switch">
+        <input type="checkbox" [checked]="autoRefresh" (change)="toggleAutoRefresh()">
+        <span class="slider"></span>
+      </label>
+    </div>
+  </div>
+
+  <!-- Tab Switcher -->
+  <div class="tabs">
+    <button class="tab-button" [ngClass]="{ active: activeTab === 'logs' }" (click)="switchTab('logs')">
+      Audit Logs
+    </button>
+    <button class="tab-button" [ngClass]="{ active: activeTab === 'users' }" (click)="switchTab('users')">
+      Managed Users
+    </button>
+  </div>
+
+  <!-- Audit Logs Tab -->
+  <div *ngIf="activeTab === 'logs'" class="tab-content">
+    <!-- Summary Stats -->
+    <div class="stats-bar">
+      <div class="stat-card">
+        <span class="stat-value">{{ totalLogs }}</span>
+        <span class="stat-label">Total Commands</span>
+      </div>
+      <div class="stat-card success">
+        <span class="stat-value">{{ successCount }}</span>
+        <span class="stat-label">Successful</span>
+      </div>
+      <div class="stat-card failed">
+        <span class="stat-value">{{ failedCount }}</span>
+        <span class="stat-label">Failed</span>
+      </div>
+      <div class="stat-card neutral">
+        <span class="stat-value last-activity">{{ lastActivity }}</span>
+        <span class="stat-label">Last Activity</span>
+      </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="filters">
+      <div class="filter-group">
+        <label>Status</label>
+        <select [(ngModel)]="selectedStatus" (change)="applyFilters()">
+          <option value="">All</option>
+          <option value="success">Success</option>
+          <option value="failed">Failed</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>Command</label>
+        <select [(ngModel)]="selectedCommand" (change)="applyFilters()">
+          <option value="">All</option>
+          <option value="onboard_user">onboard_user</option>
+          <option value="reset_password">reset_password</option>
+        </select>
+      </div>
+      <button class="reset-btn" (click)="resetFilters()">Reset Filters</button>
+    </div>
+
+    <div *ngIf="isLoading" class="loading">
+      Loading logs...
+    </div>
+
+    <div *ngIf="!isLoading && filteredLogs.length === 0" class="no-logs">
+      No logs found for the selected filters.
+    </div>
+
+    <table *ngIf="!isLoading && filteredLogs.length > 0">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Slack User</th>
+          <th>Command</th>
+          <th>Parameters</th>
+          <th>Status</th>
+          <th>Message</th>
+          <th>Timestamp</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let log of filteredLogs" [ngClass]="log.status === 'success' ? 'success-row' : 'failed-row'">
+          <td>{{ log.id }}</td>
+          <td>{{ log.slackUsername }}</td>
+          <td>{{ log.command }}</td>
+          <td>{{ log.parameters }}</td>
+          <td>
+            <span [ngClass]="log.status === 'success' ? 'badge-success' : 'badge-failed'">
+              {{ log.status }}
+            </span>
+          </td>
+          <td>{{ log.message }}</td>
+          <td>{{ log.timestamp | date: 'medium' }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Managed Users Tab -->
+  <div *ngIf="activeTab === 'users'" class="tab-content">
+    <div *ngIf="isLoadingUsers" class="loading">
+      Loading managed users...
+    </div>
+
+    <div *ngIf="!isLoadingUsers && managedUsers.length === 0" class="no-logs">
+      No managed users found.
+    </div>
+
+    <table *ngIf="!isLoadingUsers && managedUsers.length > 0">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Username</th>
+          <th>Role</th>
+          <th>Created By</th>
+          <th>Created At</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let user of managedUsers">
+          <td>{{ user.id }}</td>
+          <td>{{ user.username }}</td>
+          <td>{{ user.role }}</td>
+          <td>{{ user.createdBy }}</td>
+          <td>{{ user.createdAt | date: 'medium' }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

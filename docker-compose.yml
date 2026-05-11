@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: snowflakebot-api
+    ports:
+      - "5170:5170"
+    environment:
+      - ASPNETCORE_URLS=http://+:5170
+      - Slack__SigningSecret=${SLACK_SIGNING_SECRET}
+      - Snowflake__Account=${SNOWFLAKE_ACCOUNT}
+      - Snowflake__User=${SNOWFLAKE_USER}
+      - Snowflake__Password=${SNOWFLAKE_PASSWORD}
+      - Snowflake__Database=${SNOWFLAKE_DATABASE}
+      - Snowflake__Schema=${SNOWFLAKE_SCHEMA}
+      - Snowflake__Warehouse=${SNOWFLAKE_WAREHOUSE}
+      - AuthorizedSlackUsers__0=${AUTHORIZED_SLACK_USER}
+    volumes:
+      - ./data:/app/data
+    networks:
+      - snowflakebot-network
+
+  frontend:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    container_name: snowflakebot-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - api
+    networks:
+      - snowflakebot-network
+
+networks:
+  snowflakebot-network:
+    driver: bridge

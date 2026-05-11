@@ -1,0 +1,43 @@
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Build artifacts
+bin/
+obj/
+.vs/
+.vscode/
+
+# Dependencies
+node_modules/
+dist/
+packages/
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+auditlog.db
+
+# IDE
+.idea/
+*.swp
+*.swo
+*~
+.code-workspace
+.vscode/settings.json
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Development & Configuration
+appsettings.json
+appsettings.Development.json
+appsettings.*.json
